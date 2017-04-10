@@ -1,0 +1,74 @@
+#include <SevSeg.h>
+	#include <Keypad.h>
+	
+	SevSeg sevseg; 
+
+	
+	void setup() {
+	Serial.begin(9600);
+ pinMode (A4, OUTPUT);
+  pinMode (3, OUTPUT);
+  pinMode (4, OUTPUT);
+  pinMode (5, OUTPUT);
+  pinMode (A0, OUTPUT);
+  pinMode (A1, OUTPUT);
+  pinMode (A2, OUTPUT);
+	byte numDigits =1;
+	
+	byte digitPins[] = {A3};
+	byte segmentPins[] = {A4,3,4,5,A0,A1,A2};
+byte sevenseg[10][7] = {  //把以下資料用byte型式儲起來
+            //其中[10]是指有10組，[7]指組裡面有7個位元
+                  { 1,1,1,1,1,1,0 },  // = 0
+                  { 0,1,1,0,0,0,0 },  // = 1
+                  { 1,1,0,1,1,0,1 },  // = 2
+                  { 1,1,1,1,0,0,1 },  // = 3
+                  { 0,1,1,0,0,1,1 },  // = 4
+                  { 1,0,1,1,0,1,1 },  // = 5
+                  { 1,0,1,1,1,1,1 },  // = 6
+                  { 1,1,1,0,0,0,0 },  // = 7
+                  { 1,1,1,1,1,1,1 },  // = 8
+                  { 1,1,1,0,0,1,1 }   // = 9
+                };            
+	sevseg.begin(COMMON_CATHODE, numDigits, digitPins, segmentPins);
+	}
+	
+	const byte ROWS = 4;
+	const byte COLS = 4;
+	char key;
+	int k;
+	char keys[ROWS][COLS]={
+	{'0','1','2','3'},
+  {'4', '5', '6', '7'},
+   {'8', '9', 'A', 'B'},
+     {'C', 'D', 'E', 'F'},
+};
+	byte rowPins[ROWS]={13,12,11,10};
+	byte colPins[COLS]={9,8,7,6};
+	Keypad keypad = Keypad(makeKeymap(keys),rowPins,colPins,ROWS,COLS);
+	
+	void loop() {
+	key = keypad.getKey();
+  
+	
+	if (key != NO_KEY)
+	{
+	if(key>='A' && key<='Z')
+	k=key-'A'+10;
+	else
+	k=key-'0';
+	
+	
+	Serial.println(k);
+	sevseg.setNumber(k,1);
+	//sevseg.setChars(k);
+	sevseg.refreshDisplay(); 
+	}
+	else
+	sevseg.refreshDisplay(); 
+	
+	
+	
+	
+	
+	}
